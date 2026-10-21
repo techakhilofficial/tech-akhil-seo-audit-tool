@@ -16,6 +16,7 @@ Run a bounded on-page SEO audit with prioritized fixes, optional focus keyword c
 **Brand:** Tech Akhil  
 **Developer profile:** https://techakhil.com/akhilesh-kumar-meena/  
 **Plugin documentation:** https://techakhil.com/free-seo-audit-tool/
+**Source Code (GitHub):** https://github.com/techakhilofficial/tech-akhil-seo-audit-tool
 
 **Plugin homepage:** https://techakhil.com/free-seo-audit-tool/
 
