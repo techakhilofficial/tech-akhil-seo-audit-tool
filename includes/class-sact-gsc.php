@@ -124,6 +124,38 @@ final class TA_SACT_GSC {
 		return is_array( $data ) ? $data : array();
 	}
 	private static function properties() { return self::api( 'https://www.googleapis.com/webmasters/v3/sites' ); }
+
+	/** Check that a property is in the currently authorized Google account's property list. */
+	private static function is_authorized_property( $property ) {
+		if ( ! is_string( $property ) || '' === $property ) { return false; }
+		$result = self::properties();
+		if ( is_wp_error( $result ) ) { return false; }
+		$allowed = array();
+		foreach ( $result['siteEntry'] ?? array() as $site ) {
+			if ( isset( $site['siteUrl'] ) && is_string( $site['siteUrl'] ) ) { $allowed[] = $site['siteUrl']; }
+		}
+		return in_array( $property, $allowed, true );
+	}
+
+	/** Ensure an inspected URL belongs to the selected URL-prefix or domain property. */
+	private static function url_matches_property( $url, $property ) {
+		$url_parts = wp_parse_url( $url );
+		if ( ! is_array( $url_parts ) || empty( $url_parts['host'] ) || empty( $url_parts['scheme'] ) || ! in_array( strtolower( $url_parts['scheme'] ), array( 'http', 'https' ), true ) || isset( $url_parts['user'] ) || isset( $url_parts['pass'] ) ) { return false; }
+		if ( 0 === strpos( $property, 'sc-domain:' ) ) {
+			$domain = strtolower( trim( substr( $property, strlen( 'sc-domain:' ) ), '.' ) );
+			$host = strtolower( rtrim( $url_parts['host'], '.' ) );
+			return '' !== $domain && ( $host === $domain || substr( $host, -strlen( '.' . $domain ) ) === '.' . $domain );
+		}
+		$prefix = wp_parse_url( $property );
+		if ( ! is_array( $prefix ) || empty( $prefix['host'] ) || empty( $prefix['scheme'] ) ) { return false; }
+		if ( strtolower( $url_parts['scheme'] ) !== strtolower( $prefix['scheme'] ) || strtolower( rtrim( $url_parts['host'], '.' ) ) !== strtolower( rtrim( $prefix['host'], '.' ) ) ) { return false; }
+		$url_port = isset( $url_parts['port'] ) ? (int) $url_parts['port'] : ( 'https' === strtolower( $url_parts['scheme'] ) ? 443 : 80 );
+		$prefix_port = isset( $prefix['port'] ) ? (int) $prefix['port'] : ( 'https' === strtolower( $prefix['scheme'] ) ? 443 : 80 );
+		if ( $url_port !== $prefix_port ) { return false; }
+		$path_prefix = isset( $prefix['path'] ) ? $prefix['path'] : '/';
+		$url_path = isset( $url_parts['path'] ) ? $url_parts['path'] : '/';
+		return 0 === strpos( $url_path, $path_prefix );
+	}
 	private static function dashboard( $s ) {
 		$sites = self::properties();
 		if ( is_wp_error( $sites ) ) { echo '<div class="notice notice-error"><p>' . esc_html( $sites->get_error_message() ) . '</p></div>'; return; }
@@ -151,6 +183,7 @@ final class TA_SACT_GSC {
 	public static function refresh_dashboard() {
 		if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Not allowed.' ); } check_admin_referer( 'ta_sact_gsc_refresh' );
 		$property = isset( $_POST['property'] ) && is_scalar( $_POST['property'] ) ? sanitize_text_field( wp_unslash( $_POST['property'] ) ) : '';
+		if ( ! self::is_authorized_property( $property ) ) { self::go( 'error' ); }
 		$s = self::settings(); $s['property'] = $property; self::save( $s );
 		wp_safe_redirect( admin_url( 'admin.php?page=ta-sact-gsc' ) ); exit;
 	}
@@ -159,7 +192,9 @@ final class TA_SACT_GSC {
 		$url = isset( $_POST['inspection_url'] ) && is_scalar( $_POST['inspection_url'] ) ? esc_url_raw( wp_unslash( $_POST['inspection_url'] ), array( 'http','https' ) ) : '';
 		$property = isset( $_POST['property'] ) && is_scalar( $_POST['property'] ) ? sanitize_text_field( wp_unslash( $_POST['property'] ) ) : '';
 		$s = self::settings(); $s['last_inspection'] = array();
-		if ( $url && $property ) {
+		if ( ! $url || ! $property || ! self::is_authorized_property( $property ) || ! self::url_matches_property( $url, $property ) ) {
+			$s['last_inspection'] = array( 'error' => 'Choose an authorized Search Console property and enter a URL that belongs to that property.' );
+		} else {
 			$r = self::api( 'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', array( 'inspectionUrl'=>$url, 'siteUrl'=>$property, 'languageCode'=>'en-US' ) );
 			if ( is_wp_error( $r ) ) { $s['last_inspection'] = array( 'error'=>$r->get_error_message() ); }
 			else { $s['last_inspection'] = array( 'url'=>$url, 'result'=>$r['inspectionResult'] ?? array() ); }

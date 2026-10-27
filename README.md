@@ -2,7 +2,7 @@
 
 WordPress plugin for bounded on-page and selected technical SEO auditing, optional focus-keyword analysis, prioritized recommendations, reports, and CSV export.
 
-- **Version:** 1.9.13
+- **Version:** 1.9.14
 - **Author:** Akhilesh Kumar Meena / Tech Akhil
 - **Plugin page:** https://techakhil.com/free-seo-audit-tool/
 - **Developer profile:** https://techakhil.com/akhilesh-kumar-meena/

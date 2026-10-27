@@ -5,7 +5,7 @@ Tags: seo, audit, technical-seo, keyword-analyzer, website-audit
 Requires at least: 6.2
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.9.13
+Stable tag: 1.9.14
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,15 +104,26 @@ If an administrator connects Google Search Console, OAuth credentials and return
 
 == Upgrade Notice ==
 
+= 1.9.14 =
+Includes reviewer-focused hardening for Google Search Console property validation, optional local activity disclosure, strict boolean settings sanitization, CSV export handling, and external-service disclosures. Test on staging before production use.
+
 = 1.9.13 =
 Includes maintenance and security-related code improvements, plus aligned setup and user documentation. Back up your site and test updates on staging before production use.
 
 == Changelog ==
 
+= 1.9.14 =
+* Validate the selected Search Console property before saving refresh requests and verify inspected URLs against the selected property.
+* Keep optional Audit Activity opt-in and document local-only data handling and public cooldown acknowledgement.
+* Use strict allow-list sanitizers for boolean settings.
+* Document Google OAuth/Search Console data flow with Google API Terms, Privacy Policy, and User Data Policy links.
+* Retain enqueued JavaScript assets and WordPress inline-style API rather than inline script blocks.
+* Harden CSV export input handling and spreadsheet formula mitigation.
+
 = 1.9.13 =
 * Use a narrowly scoped safe redirect for Google OAuth authorization and allow only accounts.google.com for that redirect.
 * Separate raw public audit URL extraction from HTTP(S)-only URL sanitization.
-* Keep plugin metadata, setup documentation, and the user guide aligned with version 1.9.13.
+* Keep plugin metadata, setup documentation, and the user guide aligned with version 1.9.14.
 
 = 1.9.12 =
 * Sanitize and validate the Google OAuth authorization code once before use.

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tech Akhil SEO Audit Tool
  * Description: Lightweight on-page SEO auditing with focus keyword analysis and free SEO tool links.
- * Version: 1.9.13
+ * Version: 1.9.14
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Akhilesh Kumar Meena
@@ -13,7 +13,7 @@
  * Text Domain: tech-akhil-seo-audit-tool
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
-define( 'TA_SACT_VERSION', '1.9.13' );
+define( 'TA_SACT_VERSION', '1.9.14' );
 define( 'TA_SACT_PATH', plugin_dir_path( __FILE__ ) );
 define( 'TA_SACT_URL', plugin_dir_url( __FILE__ ) );
 require_once TA_SACT_PATH . 'includes/class-sact-crawler.php';

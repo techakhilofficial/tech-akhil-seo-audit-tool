@@ -1,6 +1,6 @@
-# Tech Akhil SEO Audit Tool — Setup Guide (v1.9.13)
+# Tech Akhil SEO Audit Tool — Setup Guide (v1.9.14)
 
-This guide describes **Tech Akhil SEO Audit Tool v1.9.13**. Official documentation: https://techakhil.com/free-seo-audit-tool/. The bundled user guide is `docs/free-seo-audit-tool-by-tech-akhil-documentation.pdf`.
+This guide describes **Tech Akhil SEO Audit Tool v1.9.14**. Official documentation: https://techakhil.com/free-seo-audit-tool/. The bundled user guide is `docs/free-seo-audit-tool-by-tech-akhil-documentation.pdf`.
 
 ## Quick start
 1. Back up the site before updating a production installation. If a staging site is available, test there first.

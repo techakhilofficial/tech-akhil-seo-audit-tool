@@ -1,3 +1,9 @@
+Version 1.9.14
+* Validate Google Search Console property selection and inspected URL ownership.
+* Keep optional Audit Activity explicitly opt-in and document data handling and Google external-service disclosures.
+* Use strict boolean setting allow-lists and retain enqueued scripts.
+* Harden CSV report structure checks and output handling.
+
 Tech Akhil SEO Audit Tool — Changelog
 =====================================
 
