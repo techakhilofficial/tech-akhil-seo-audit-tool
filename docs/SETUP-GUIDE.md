@@ -1,6 +1,6 @@
-# Tech Akhil SEO Audit Tool — Setup Guide (v1.9.8)
+# Tech Akhil SEO Audit Tool — Setup Guide (v1.9.13)
 
-This guide describes the **v1.9.8 review candidate**. The bundled PDF manual is `docs/free-seo-audit-tool-by-tech-akhil-documentation.pdf`.
+This guide describes **Tech Akhil SEO Audit Tool v1.9.13**. Official documentation: https://techakhil.com/free-seo-audit-tool/. The bundled user guide is `docs/free-seo-audit-tool-by-tech-akhil-documentation.pdf`.
 
 ## Quick start
 1. Back up the site before updating a production installation. If a staging site is available, test there first.
@@ -38,7 +38,8 @@ CSV export tokens are single-use and expire after two hours. If a link expires o
 The crawler does not execute JavaScript and cannot guarantee full-site coverage. Some link, structured-data, analytics, UX, and security checks are lightweight heuristics. The tool is not a full accessibility audit, malware scanner, penetration test, or ranking predictor, and it cannot guarantee search ranking outcomes. Google Search Console requires an administrator to authorize access to an eligible property.
 
 ## WordPress.org directory assets
-The screenshots described in `readme.txt`, plugin icon, and directory banner are **WordPress.org repository assets**. They must be uploaded separately to the root `assets/` directory of the plugin’s WordPress.org SVN repository; they do not belong in `trunk/assets/` and do not need to be included in the installable plugin ZIP. The `docs/brand-assets/` files in this package are reference brand marks, not substitutes for genuine screenshots of the running plugin.
+The screenshots described in `readme.txt`, plugin icon, and directory banner are **WordPress.org repository assets**. They must be uploaded separately to the root `assets/` directory of the plugin’s WordPress.org SVN repository. They are not required by the installed plugin runtime and are intentionally excluded from this installable ZIP. Use genuine screenshots captured from the running plugin for repository screenshots.
 
-## Included brand assets
-Tech Akhil wordmark and lettermark reference files are in `docs/brand-assets/`.
+## Privacy and external services
+
+Before a public audit runs, the submitter must acknowledge the temporary 60-second IP-hash cooldown. The hash is stored in a short-lived WordPress transient and is not sent to Tech Akhil. Audit Activity stores only a normalized domain and timestamp, and only after the submitter opts in. The optional Google Search Console integration sends the data needed for OAuth, property listing, search-performance requests, and URL inspection to Google; see `readme.txt` for the exact data categories and official Google terms/privacy links. PageSpeed Insights and Schema Markup Validator are opened as external links and are not called by the plugin server. PageSpeed links: Google Terms (https://policies.google.com/terms?hl=en-IN) and Privacy (https://policies.google.com/privacy). Schema.org Validator terms: https://schema.org/docs/terms.html. This review did not identify a separate validator-specific privacy policy; Google’s general privacy policy is https://policies.google.com/privacy.

@@ -87,3 +87,8 @@
 .ta-sact-front .ta-sact-brand-footer a:hover{text-decoration:underline}
 @media(max-width:600px){.ta-sact-front{padding-inline:8px;margin:12px auto}.ta-sact-front .ta-sact-form{padding:16px}.ta-sact-front .ta-sact-page-data-section{padding:10px;margin:16px 0}.ta-sact-front .ta-sact-page-card-body{padding:9px}.ta-sact-front .ta-sact-brand-footer{margin-top:16px;padding:12px 8px}}
 @media(prefers-reduced-motion:reduce){.ta-sact-front *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+
+/* Explicit, optional consent for storing a domain/date in local Audit Activity. */
+.ta-sact-activity-consent{display:flex;align-items:flex-start;gap:.6rem;margin:1rem 0;font-size:.9rem;line-height:1.5}
+.ta-sact-activity-consent input[type=checkbox]{flex:0 0 auto;margin:.2rem 0 0}

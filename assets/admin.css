@@ -4,3 +4,8 @@
 /* Dashboard shortcode control and audit form presentation. */
 .ta-sact-admin .sact-shortcode-panel{margin-bottom:18px}.ta-sact-admin .sact-shortcode-copy-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ta-sact-admin .sact-shortcode-copy-row code{display:block;flex:1 1 260px;min-width:0;padding:13px 15px;border:1px solid #e1e5ef;border-radius:9px;background:#f7f8fc;color:#4d2cc7;font-size:14px;overflow-wrap:anywhere}.ta-sact-admin .sact-copy-status{flex-basis:100%;font-size:12px;color:#087f51}.ta-sact-admin .sact-shortcode-copy-row button{min-height:42px}.ta-sact-admin .sact-admin-grid .sact-action-card:focus-visible{outline:3px solid #8d79ff;outline-offset:3px}
 @media(max-width:600px){.ta-sact-admin .sact-shortcode-copy-row{align-items:stretch;flex-direction:column}.ta-sact-admin .sact-shortcode-copy-row code,.ta-sact-admin .sact-shortcode-copy-row button{width:100%;max-width:100%}}
+
+/* Plugin admin footer and Google inspection output; kept in enqueued CSS. */
+.ta-sact-admin-brand-footer{margin:24px 20px 0 0;padding:14px 10px;border-top:1px solid #dcdcde;color:#646970;text-align:center;font-size:12px}
+.ta-sact-admin-brand-footer a{font-weight:600;text-decoration:none}
+.ta-sact-gsc-inspection-result{max-width:100%;overflow:auto;background:#fff;padding:12px;border:1px solid #ccd0d4}

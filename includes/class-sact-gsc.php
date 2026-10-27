@@ -24,7 +24,7 @@ final class TA_SACT_GSC {
 	private static function redirect_uri() { return admin_url( 'admin-post.php?action=ta_sact_gsc_callback' ); }
 	public static function page() {
 		if ( ! current_user_can( 'manage_options' ) ) { return; }
-		$s = self::settings(); $notice = isset( $_GET['sact_gsc_notice'] ) ? sanitize_key( wp_unslash( $_GET['sact_gsc_notice'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only OAuth status notice; value is sanitized and allow-listed by comparison.
+		$s = self::settings(); $notice = isset( $_GET['sact_gsc_notice'] ) && is_scalar( $_GET['sact_gsc_notice'] ) ? sanitize_key( wp_unslash( $_GET['sact_gsc_notice'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only OAuth status notice; value is sanitized and allow-listed by comparison.
 		echo '<div class="wrap"><h1>Google Search Console Integration</h1>';
 		echo '<p>Google Search Console API is free to use, subject to Google quotas. You do not need a paid Search Console subscription. You do need a free Google Cloud project and OAuth client credentials, and your Google account must have access to the property.</p>';
 		if ( 'disconnected' === $notice ) { echo '<div class="notice notice-success"><p>Google account disconnected and saved tokens removed.</p></div>'; }
@@ -45,7 +45,7 @@ final class TA_SACT_GSC {
 			echo '<p><strong>Status:</strong> Connected.</p>';
 			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">'; wp_nonce_field( 'ta_sact_gsc_disconnect' ); echo '<input type="hidden" name="action" value="ta_sact_gsc_disconnect">'; submit_button( 'Disconnect Google account', 'delete' ); echo '</form>';
 			self::dashboard( $s );
-			if ( ! empty( $s['last_inspection'] ) ) { echo '<h3>Last URL inspection result</h3><pre style="max-width:100%;overflow:auto;background:#fff;padding:12px;border:1px solid #ccd0d4">' . esc_html( wp_json_encode( $s['last_inspection'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ) . '</pre>'; }
+			if ( ! empty( $s['last_inspection'] ) ) { echo '<h3>Last URL inspection result</h3><pre class="ta-sact-gsc-inspection-result">' . esc_html( wp_json_encode( $s['last_inspection'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ) . '</pre>'; }
 		}
 		echo '<hr><p><strong>Privacy:</strong> tokens are stored in this WordPress site database. Keep WordPress and administrator accounts secure. Disconnect to remove saved tokens. Data is requested from Google only for features you run.</p></div>';
 	}
@@ -65,19 +65,29 @@ final class TA_SACT_GSC {
 			'scope'=>'https://www.googleapis.com/auth/webmasters.readonly',
 			'access_type'=>'offline', 'prompt'=>'consent', 'include_granted_scopes'=>'true', 'state'=>$state
 		), 'https://accounts.google.com/o/oauth2/v2/auth' );
-		wp_safe_redirect( $url );
+		// Allow only Google's fixed OAuth host for this redirect, then use wp_safe_redirect().
+		$google_host = 'accounts.google.com';
+		add_filter( 'allowed_redirect_hosts', static function ( $hosts ) use ( $google_host ) {
+			$hosts[] = $google_host;
+			return array_values( array_unique( $hosts ) );
+		} );
+		wp_safe_redirect( esc_url_raw( $url ), 302, 'Tech Akhil SEO Audit Tool' );
 		exit;
 	}
 	public static function callback() {
 		if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Not allowed.' ); }
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback is protected by the single-use state token validated below.
-		$state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
+		$state = isset( $_GET['state'] ) && is_scalar( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
 		$expected = get_transient( 'ta_sact_gsc_state_' . get_current_user_id() ); delete_transient( 'ta_sact_gsc_state_' . get_current_user_id() );
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Google redirects back with the authorization code; the single-use OAuth state is validated above.
-		if ( ! $state || ! $expected || ! hash_equals( $expected, $state ) || empty( $_GET['code'] ) ) { self::go( 'error' ); } // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback uses a validated, single-use state token.
+		// Google returns an authorization code by redirecting to this callback.
+		// Sanitize it once before validation/use; the single-use OAuth state above
+		// protects this callback against forged authorization responses.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback validates a single-use state token before accepting the code.
+		$code = isset( $_GET['code'] ) && is_scalar( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : '';
+		if ( ! $state || ! $expected || ! hash_equals( $expected, $state ) || '' === $code ) { self::go( 'error' ); }
 		$response = wp_remote_post( 'https://oauth2.googleapis.com/token', array( 'timeout'=>20, 'body'=>array(
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth authorization code is accepted only after validating the single-use state token.
-			'code'=>sanitize_text_field( wp_unslash( $_GET['code'] ) ), 'client_id'=>get_option( 'ta_sact_gsc_client_id', '' ),
+			'code' => $code, 'client_id'=>get_option( 'ta_sact_gsc_client_id', '' ),
 			'client_secret'=>get_option( 'ta_sact_gsc_client_secret', '' ), 'redirect_uri'=>self::redirect_uri(), 'grant_type'=>'authorization_code'
 		) ) );
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) { self::go( 'error' ); }
@@ -119,7 +129,7 @@ final class TA_SACT_GSC {
 		if ( is_wp_error( $sites ) ) { echo '<div class="notice notice-error"><p>' . esc_html( $sites->get_error_message() ) . '</p></div>'; return; }
 		$list = $sites['siteEntry'] ?? array(); if ( ! $list ) { echo '<p>No Search Console properties were returned for this Google account.</p>'; return; }
 		$selected = $s['property'] ?? $list[0]['siteUrl'];
-		if ( isset( $_POST['ta_sact_gsc_property'] ) ) {
+		if ( isset( $_POST['ta_sact_gsc_property'] ) && is_scalar( $_POST['ta_sact_gsc_property'] ) ) {
 			check_admin_referer( 'ta_sact_gsc_refresh' );
 			$selected = sanitize_text_field( wp_unslash( $_POST['ta_sact_gsc_property'] ) );
 		}
@@ -140,14 +150,14 @@ final class TA_SACT_GSC {
 	}
 	public static function refresh_dashboard() {
 		if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Not allowed.' ); } check_admin_referer( 'ta_sact_gsc_refresh' );
-		$property = isset( $_POST['property'] ) ? sanitize_text_field( wp_unslash( $_POST['property'] ) ) : '';
+		$property = isset( $_POST['property'] ) && is_scalar( $_POST['property'] ) ? sanitize_text_field( wp_unslash( $_POST['property'] ) ) : '';
 		$s = self::settings(); $s['property'] = $property; self::save( $s );
 		wp_safe_redirect( admin_url( 'admin.php?page=ta-sact-gsc' ) ); exit;
 	}
 	public static function inspect_url() {
 		if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Not allowed.' ); } check_admin_referer( 'ta_sact_gsc_inspect' );
-		$url = isset( $_POST['inspection_url'] ) ? esc_url_raw( wp_unslash( $_POST['inspection_url'] ), array( 'http','https' ) ) : '';
-		$property = isset( $_POST['property'] ) ? sanitize_text_field( wp_unslash( $_POST['property'] ) ) : '';
+		$url = isset( $_POST['inspection_url'] ) && is_scalar( $_POST['inspection_url'] ) ? esc_url_raw( wp_unslash( $_POST['inspection_url'] ), array( 'http','https' ) ) : '';
+		$property = isset( $_POST['property'] ) && is_scalar( $_POST['property'] ) ? sanitize_text_field( wp_unslash( $_POST['property'] ) ) : '';
 		$s = self::settings(); $s['last_inspection'] = array();
 		if ( $url && $property ) {
 			$r = self::api( 'https://searchconsole.googleapis.com/v1/urlInspection/index:inspect', array( 'inspectionUrl'=>$url, 'siteUrl'=>$property, 'languageCode'=>'en-US' ) );

@@ -16,15 +16,15 @@ final class TA_SACT_Crawler {
 		$host = is_array( $parts ) && isset( $parts['host'] ) ? strtolower( $parts['host'] ) : '';
 		$scheme = is_array( $parts ) && isset( $parts['scheme'] ) ? strtolower( $parts['scheme'] ) : '';
 		if ( ! $url || ! in_array( $scheme, array( 'http', 'https' ), true ) || ! $host || preg_match( '/[^a-z0-9.:-]/i', $host ) ) {
-			return new WP_Error( 'sact_invalid_url', __( 'Enter a valid public HTTP/HTTPS website URL.', 'seo-audit-checklist-tool' ) );
+			return new WP_Error( 'sact_invalid_url', __( 'Enter a valid public HTTP/HTTPS website URL.', 'tech-akhil-seo-audit-tool' ) );
 		}
 		$port = isset( $parts['port'] ) ? (int) $parts['port'] : ( 'https' === $scheme ? 443 : 80 );
 		if ( ! in_array( $port, array( 80, 443 ), true ) || ( 'https' === $scheme && 80 === $port ) || ( 'http' === $scheme && 443 === $port ) ) {
-			return new WP_Error( 'sact_invalid_port', __( 'For safety, only standard HTTP (80) and HTTPS (443) ports are supported.', 'seo-audit-checklist-tool' ) );
+			return new WP_Error( 'sact_invalid_port', __( 'For safety, only standard HTTP (80) and HTTPS (443) ports are supported.', 'tech-akhil-seo-audit-tool' ) );
 		}
 		// Reject localhost and literal private/reserved IP addresses for public-tool SSRF protection.
 		if ( 'localhost' === $host || substr( $host, -6 ) === '.local' || filter_var( $host, FILTER_VALIDATE_IP ) && ! filter_var( $host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
-			return new WP_Error( 'sact_invalid_url', __( 'Private, local, and reserved network addresses cannot be audited.', 'seo-audit-checklist-tool' ) );
+			return new WP_Error( 'sact_invalid_url', __( 'Private, local, and reserved network addresses cannot be audited.', 'tech-akhil-seo-audit-tool' ) );
 		}
 		$home_host = $host;
 		$target_origin = $scheme . '://' . $host . ( isset( $parts['port'] ) ? ':' . (int) $parts['port'] : '' );

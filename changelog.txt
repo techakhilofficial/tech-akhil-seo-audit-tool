@@ -1,0 +1,90 @@
+Tech Akhil SEO Audit Tool — Changelog
+=====================================
+
+Version 1.9.13
+--------------
+- Use wp_safe_redirect() for Google OAuth authorization with a narrowly scoped allow-list for accounts.google.com.
+- Separate public audit URL request extraction from HTTP(S)-only URL sanitization.
+- Keep plugin folder, main PHP filename, text domain, shortcode, version metadata, and documentation links aligned.
+- Refresh the end-user documentation and setup guide; keep internal review checklists out of the user guide.
+- Add the WordPress Tested up to header for the current stable 7.1 release series.
+
+Historical releases
+-------------------
+
+= 1.9.12 =
+* Sanitize and validate the Google OAuth authorization code once before use to address the Plugin Check input-sanitization warning.
+* Refresh the setup guide and PDF manual, and move older release notes into changelog.txt.
+
+= 1.9.11 =
+* Move report print behavior to the enqueued front-end script.
+* Move remaining plugin inline styles to enqueued stylesheets or the WordPress inline-style API.
+* Harden scalar validation for request inputs in audit, Google Search Console, activity filters, and CSV export.
+
+
+= 1.9.10 =
+* Aligned the plugin folder and main PHP filename with the assigned WordPress.org slug while keeping the display name "Tech Akhil SEO Audit Tool" and matching text domain.
+* Enqueued report filter and page-card interaction scripts through the front-end JavaScript asset instead of printing inline script tags.
+* Corrected boolean setting sanitization to use a strict allow-list.
+* Added explicit acknowledgement for the temporary IP-hash abuse-prevention cooldown and optional opt-in before saving public audit domains and timestamps to local Audit Activity.
+* Expanded Google Search Console/OAuth external-service disclosure with data sent, trigger conditions, and official terms/privacy links.
+* Corrected the Settings action-link hook to reference the actual main plugin file.
+
+= 1.9.8 =
+* Fixed admin footer screen detection to use WordPress's current-screen API instead of reading the request page parameter, removing the related nonce-verification warnings.
+
+
+= 1.9.7 =
+* Extended temporary CSV export links to two hours while retaining single-use tokens.
+* Added CSV formula-injection mitigation for text cells.
+* Added fresh audit nonce retrieval for cached/back-restored forms and moved public cooldown application after nonce validation.
+* Added consistent Tech Akhil footer branding across plugin admin screens.
+* Made public-facing attribution optional and disabled by default.
+* Added missing hidden admin destinations used by dashboard quick-action cards.
+* Updated documentation for export expiry and attribution behaviour.
+
+
+= 1.9.6 =
+* Shortened the WordPress admin menu label to SEO Audit.
+* Simplified the visible admin menu and improved report container spacing/responsive safeguards.
+* Added Tech Akhil attribution footer to the Free version (public attribution was later made optional and disabled by default in v1.9.7).
+
+
+= 1.9.3 =
+* Renamed the plugin display name to Tech Akhil SEO Audit Tool.
+* Added an admin audit form, dashboard shortcode Copy button, H3 heading counts, internal/external link counts, heading hierarchy heuristic, and exact duplicate visible-text detection across crawled pages.
+* Kept PageSpeed API, Search Console API, backlink data and competitor data as separate integrations; core audit checks do not require these services.
+
+
+= 1.9.0 =
+* Added a colorful admin dashboard and dedicated report/settings navigation.
+* Added saved toggles for optional keyword analysis and report sections/actions.
+* Added scoped responsive admin styling; existing shortcode and crawl logic retained.
+
+
+= 1.8.2 =
+* Added Tech Akhil website, documentation, and plugin review links to the plugin metadata row.
+
+= 1.8.1 =
+* Updated the product display name to Free SEO Audit Tool by Tech Akhil.
+* Added branded step-by-step PDF documentation to the plugin package.
+
+= 1.8.0 =
+* Simplified Audit Activity to show unique audited domains and the last audit date.
+* Added Today, This month, This year, Custom date, and Custom date range filters.
+* Stores domain and timestamp, de-duplicates the same domain per day, prunes records older than one year, and caps the activity list at 2,000 records.
+* Migrates legacy audit activity to minimal domain/date records and removes detailed legacy logs.
+
+= 1.7.0 =
+* Added sitemap/robots discovery and basic XML sitemap validation.
+* Added mobile viewport, language, empty-link text, form-label heuristic, structured-data, mixed-content, and visible-content signals.
+* Added lightweight security-header checks and analytics/form-presence signals.
+* Added a prioritized action plan with estimated effort labels.
+* Kept PageSpeed analysis as an external link rather than a server-side API call.
+
+= 1.6.0 =
+* Added the optional Focus Keyword Analyzer for title, meta description, H1, extracted content, opening text, URL slug, related keywords, image alt, and link text.
+* Removed server-side PageSpeed API calls, API-key setting, and PageSpeed setup menu.
+* Removed automatic full-report history retention.
+* Simplified the admin menu and retained report theme/accent settings, Search Console setup, and minimal activity logging.
+

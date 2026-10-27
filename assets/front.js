@@ -70,4 +70,57 @@
         refreshVisibleForms();
     }
     window.addEventListener('pageshow', refreshVisibleForms);
+
+    // Report issue filters, page-card accordions, and print actions are registered from an enqueued file.
+    function initReportInteractions() {
+        document.querySelectorAll('[data-sact-print]').forEach(function (button) {
+            button.addEventListener('click', function () { window.print(); });
+        });
+        document.querySelectorAll('.ta-sact-report').forEach(function (root) {
+            var tabs = root.querySelectorAll('[data-sact-filter]');
+            var items = root.querySelectorAll('[data-sact-severity]');
+            tabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    var severity = tab.getAttribute('data-sact-filter');
+                    tabs.forEach(function (otherTab) {
+                        var active = otherTab === tab;
+                        otherTab.classList.toggle('is-active', active);
+                        otherTab.setAttribute('aria-selected', active ? 'true' : 'false');
+                    });
+                    items.forEach(function (item) {
+                        item.hidden = item.getAttribute('data-sact-severity') !== severity;
+                        if (item.hidden) {
+                            item.open = false;
+                        }
+                    });
+                });
+            });
+            var initialTab = root.querySelector('[data-sact-filter="error"]');
+            if (initialTab) {
+                initialTab.click();
+            }
+        });
+
+        document.querySelectorAll('.ta-sact-page-data-section').forEach(function (section) {
+            var cards = section.querySelectorAll('.ta-sact-page-card');
+            cards.forEach(function (card) {
+                card.addEventListener('toggle', function () {
+                    if (!card.open) {
+                        return;
+                    }
+                    cards.forEach(function (otherCard) {
+                        if (otherCard !== card) {
+                            otherCard.open = false;
+                        }
+                    });
+                });
+            });
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initReportInteractions);
+    } else {
+        initReportInteractions();
+    }
 })();
